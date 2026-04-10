@@ -10,6 +10,9 @@ type UserPayload = {
   email?: string;
   password?: string;
   authProvider?: LoginProvider;
+  realName?: string;
+  aboutMe?: string;
+  interests?: string[];
 };
 
 function parseProvider(provider: unknown): LoginProvider {
@@ -50,6 +53,9 @@ export async function POST(request: Request) {
     email,
     password,
     authProvider: parseProvider(payload.authProvider),
+    realName: payload.realName,
+    aboutMe: payload.aboutMe,
+    interests: payload.interests,
   });
 
   const users = await listUsers();

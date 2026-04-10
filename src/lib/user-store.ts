@@ -29,6 +29,9 @@ export type UserInput = {
   email: string;
   password: string;
   authProvider?: LoginProvider;
+  realName?: string;
+  aboutMe?: string;
+  interests?: string[];
 };
 
 const dataDirectory = path.join(process.cwd(), "data");
@@ -79,6 +82,9 @@ export async function upsertUser(input: UserInput) {
   const normalizedName = input.name.trim();
   const normalizedPassword = input.password;
   const provider = input.authProvider ?? "email";
+  const normalizedRealName = input.realName?.trim() ?? "";
+  const normalizedAboutMe = input.aboutMe?.trim() ?? "";
+  const normalizedInterests = Array.from(new Set((input.interests ?? []).map((interest) => interest.trim()).filter(Boolean)));
 
   const users = await readUsers();
   const existingUserIndex = users.findIndex((user) => user.email.toLowerCase() === normalizedEmail);
@@ -88,6 +94,9 @@ export async function upsertUser(input: UserInput) {
     ? {
         ...users[existingUserIndex],
         name: normalizedName,
+        realName: normalizedRealName,
+        aboutMe: normalizedAboutMe,
+        interests: normalizedInterests,
         email: normalizedEmail,
         password: normalizedPassword,
         authProvider: provider,
@@ -96,6 +105,9 @@ export async function upsertUser(input: UserInput) {
     : {
         id: randomUUID(),
         name: normalizedName,
+        realName: normalizedRealName,
+        aboutMe: normalizedAboutMe,
+        interests: normalizedInterests,
         email: normalizedEmail,
         password: normalizedPassword,
         authProvider: provider,
