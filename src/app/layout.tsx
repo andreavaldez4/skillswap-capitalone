@@ -6,21 +6,22 @@ import { UserProvider } from "@/contexts/UserContext";
 
 // Fuente para headings/títulos
 const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-heading',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
 });
 
 // Fuente para cuerpo/texto
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Skill Swap - Intercambia habilidades, crece junto a otros",
-  description: "Plataforma comunitaria para intercambiar habilidades sin dinero",
+  description:
+    "Plataforma comunitaria para intercambiar habilidades sin dinero",
 };
 
 export default function RootLayout({
@@ -31,7 +32,12 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={cn("h-full", "antialiased", plusJakartaSans.variable, inter.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        plusJakartaSans.variable,
+        inter.variable,
+      )}
     >
       <body className="min-h-full flex flex-col font-sans bg-white">
         <UserProvider>{children}</UserProvider>

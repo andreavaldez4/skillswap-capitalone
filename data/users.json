@@ -1,0 +1,192 @@
+[
+  {
+    "id": "82e4c18a-40a5-49c1-a861-2c7d2323f949",
+    "name": "andrea",
+    "realName": "Andrea Valdez",
+    "aboutMe": "asd",
+    "interests": [
+      "cocina",
+      "fotografia",
+      "deportes"
+    ],
+    "interestsOther": "tenis asd",
+    "preferences": {
+      "wantsToLearn": [
+        "programacion"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [
+        "musica"
+      ],
+      "canTeachOther": "",
+      "learningStyle": [
+        "paso a paso"
+      ],
+      "learningStyleOther": "asd",
+      "teachingStyle": [
+        "aprendizaje rapido"
+      ],
+      "teachingStyleOther": "",
+      "availableHours": [
+        "Lun-10",
+        "Lun-12",
+        "Lun-14",
+        "Jue-13",
+        "Jue-12",
+        "Jue-11"
+      ]
+    },
+    "email": "a01640796@tec.mx",
+    "password": "123",
+    "authProvider": "email",
+    "questionnaireCompleted": true,
+    "createdAt": "2026-04-10T21:56:30.757Z",
+    "updatedAt": "2026-04-10T21:56:45.979Z"
+  },
+  {
+    "id": "aacee5e2-07bd-4e50-afda-d63c175e4e07",
+    "name": "dasdcsdcs",
+    "realName": "",
+    "aboutMe": "",
+    "interests": [
+      "cocina"
+    ],
+    "interestsOther": "",
+    "preferences": {
+      "wantsToLearn": [],
+      "wantsToLearnOther": "",
+      "canTeach": [],
+      "canTeachOther": "",
+      "learningStyle": [],
+      "learningStyleOther": "",
+      "teachingStyle": [],
+      "teachingStyleOther": "",
+      "availableHours": []
+    },
+    "email": "marinoe2005@gmail.com",
+    "password": "asdad",
+    "authProvider": "email",
+    "questionnaireCompleted": false,
+    "createdAt": "2026-04-10T21:25:49.451Z",
+    "updatedAt": "2026-04-10T21:25:52.896Z"
+  },
+  {
+    "id": "38e152f7-8be4-43d1-88bc-5794923edfde",
+    "name": "rsgsfgs",
+    "realName": "",
+    "aboutMe": "",
+    "interests": [],
+    "interestsOther": "dkjsnjks",
+    "preferences": {
+      "wantsToLearn": [
+        "design"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [],
+      "canTeachOther": "",
+      "learningStyle": [
+        "visual"
+      ],
+      "learningStyleOther": "",
+      "teachingStyle": [],
+      "teachingStyleOther": "",
+      "availableHours": []
+    },
+    "email": "a@gmail.com",
+    "password": "123",
+    "authProvider": "email",
+    "questionnaireCompleted": false,
+    "createdAt": "2026-04-10T21:16:23.857Z",
+    "updatedAt": "2026-04-10T21:18:34.064Z"
+  },
+  {
+    "id": "177abff3-99aa-4b36-8f83-347e93068d5a",
+    "name": "testing",
+    "realName": "",
+    "aboutMe": "",
+    "interests": [
+      "cooking",
+      "coding"
+    ],
+    "interestsOther": "",
+    "preferences": {
+      "wantsToLearn": [
+        "design"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [
+        "public speaking"
+      ],
+      "canTeachOther": "",
+      "learningStyle": [
+        "hands-on"
+      ],
+      "learningStyleOther": "",
+      "teachingStyle": [
+        "quick learner"
+      ],
+      "teachingStyleOther": "",
+      "availableHours": [
+        "Mon-17",
+        "Mon-18",
+        "Mon-19",
+        "Mon-20",
+        "Mon-21"
+      ]
+    },
+    "email": "mytest@hotmail.com",
+    "password": "test",
+    "authProvider": "email",
+    "questionnaireCompleted": true,
+    "createdAt": "2026-04-10T20:45:38.131Z",
+    "updatedAt": "2026-04-10T20:46:00.494Z"
+  },
+  {
+    "id": "template-user-001",
+    "name": "alex_user",
+    "realName": "Alex",
+    "aboutMe": "I enjoy learning and helping others grow.",
+    "interests": [
+      "reading",
+      "music",
+      "fitness"
+    ],
+    "interestsOther": "",
+    "email": "alex.user@example.com",
+    "password": "password123",
+    "authProvider": "email",
+    "questionnaireCompleted": true,
+    "preferences": {
+      "wantsToLearn": [
+        "public speaking",
+        "design"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [
+        "coding",
+        "math"
+      ],
+      "canTeachOther": "",
+      "learningStyle": [
+        "hands-on",
+        "slow and steady"
+      ],
+      "learningStyleOther": "",
+      "teachingStyle": [
+        "one-on-one",
+        "examples first"
+      ],
+      "teachingStyleOther": "",
+      "availableHours": [
+        "Mon-18",
+        "Mon-19",
+        "Wed-18",
+        "Wed-19",
+        "Sat-10",
+        "Sat-11"
+      ]
+    },
+    "createdAt": "2026-04-10T21:00:00.000Z",
+    "updatedAt": "2026-04-10T21:00:00.000Z"
+  }
+]

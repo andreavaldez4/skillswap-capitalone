@@ -1,7 +1,7 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 type SwappyHelperProps = {
-  image: 'idle' | 'saludo' | 'estudio';
+  image: "idle" | "saludo" | "estudio";
   message: string;
   className?: string;
 };
@@ -9,7 +9,7 @@ type SwappyHelperProps = {
 export function SwappyHelper({
   image,
   message,
-  className = '',
+  className = "",
 }: SwappyHelperProps) {
   const imagePath = `/petImages/${image}.png`;
 
@@ -20,6 +20,7 @@ export function SwappyHelper({
           src={imagePath}
           alt="Swappy"
           fill
+          sizes="64px"
           className="object-contain"
         />
       </div>
