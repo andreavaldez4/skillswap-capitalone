@@ -1,0 +1,36 @@
+[
+  {
+    "id": "eb1b577b-e290-4b79-8220-52c65e6c1c66",
+    "name": "Marin",
+    "email": "marin6767@gmail.com",
+    "password": "test",
+    "authProvider": "google",
+    "questionnaireCompleted": false,
+    "preferences": {
+      "wantsToLearn": "",
+      "canTeach": "",
+      "learningStyle": "",
+      "teachingStyle": "",
+      "availableHours": ""
+    },
+    "createdAt": "2026-04-10T19:33:32.067Z",
+    "updatedAt": "2026-04-10T19:33:32.067Z"
+  },
+  {
+    "id": "492b0547-aac9-4c5a-ac34-508db2ca8759",
+    "name": "Marin",
+    "email": "marin@example.com",
+    "password": "test",
+    "authProvider": "email",
+    "questionnaireCompleted": false,
+    "preferences": {
+      "wantsToLearn": "",
+      "canTeach": "",
+      "learningStyle": "",
+      "teachingStyle": "",
+      "availableHours": ""
+    },
+    "createdAt": "2026-04-10T19:32:32.926Z",
+    "updatedAt": "2026-04-10T19:32:32.926Z"
+  }
+]

@@ -1,65 +1,355 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+
+type LoginProvider = "email" | "google";
+
+type StoredUser = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  authProvider: LoginProvider;
+  questionnaireCompleted: boolean;
+  preferences: {
+    wantsToLearn: string;
+    canTeach: string;
+    learningStyle: string;
+    teachingStyle: string;
+    availableHours: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ApiResponse = {
+  message?: string;
+  error?: string;
+  savedUser?: StoredUser;
+  users?: StoredUser[];
+  total?: number;
+};
+
+const demoGoogleUser = {
+  name: "Marin Demo",
+  email: "marin.demo@gmail.com",
+  password: "demo1234",
+  authProvider: "google" as const,
+};
 
 export default function Home() {
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    password: "",
+    authProvider: "email" as LoginProvider,
+  });
+  const [savedUser, setSavedUser] = useState<StoredUser | null>(null);
+  const [savedUsers, setSavedUsers] = useState<StoredUser[]>([]);
+  const [statusMessage, setStatusMessage] = useState(
+    "Create the first profile to confirm the JSON write flow."
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    void refreshUsers();
+  }, []);
+
+  async function refreshUsers() {
+    try {
+      const response = await fetch("/api/users", { cache: "no-store" });
+      const data = (await response.json()) as ApiResponse;
+
+      if (response.ok) {
+        setSavedUsers(data.users ?? []);
+      }
+    } catch {
+      setStatusMessage("Could not read the saved users file yet.");
+    }
+  }
+
+  function fillDemoGoogleLogin() {
+    setFormState(demoGoogleUser);
+    setStatusMessage("Demo Gmail values loaded. Submit to save the profile.");
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setStatusMessage("Saving user to data/users.json...");
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      const data = (await response.json()) as ApiResponse;
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Unable to save the user.");
+      }
+
+      setSavedUser(data.savedUser ?? null);
+      setSavedUsers(data.users ?? []);
+      setStatusMessage(data.message ?? "User saved successfully.");
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : "Unexpected save error.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(249,115,22,0.16),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_48%,_#ffffff_100%)] px-6 py-8 text-slate-900 sm:px-10 lg:px-12">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.04)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_90%)]" />
+
+      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl flex-col gap-8 lg:flex-row lg:items-stretch">
+        <section className="flex flex-1 flex-col justify-between gap-8 rounded-[2rem] border border-white/70 bg-white/75 p-8 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <Badge className="rounded-full bg-emerald-100 text-emerald-900 hover:bg-emerald-100">
+                Phase 1
+              </Badge>
+              <span className="text-sm font-medium uppercase tracking-[0.22em] text-slate-500">
+                Local JSON signup
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+                Build the first profile, verify the save, then move to the matching flow.
+              </h1>
+              <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+                This screen only handles the first milestone: create a user, write the
+                profile to a local JSON file, and show the saved record so the judges can
+                see the persistence working.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                ["1", "Login form"],
+                ["2", "JSON save check"],
+                ["3", "Preferences later"],
+              ].map(([step, label]) => (
+                <div
+                  key={label}
+                  className="rounded-2xl border border-slate-200/80 bg-slate-50/90 p-4 shadow-sm"
+                >
+                  <div className="text-sm font-semibold text-emerald-700">Step {step}</div>
+                  <div className="mt-1 text-sm text-slate-600">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="border-slate-200/80 bg-slate-50/90 shadow-none">
+              <CardHeader>
+                <CardTitle>What this phase covers</CardTitle>
+                <CardDescription>
+                  Only the login and local persistence path is active right now.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-slate-600">
+                <p>Email/password creation</p>
+                <p>Gmail demo prefill for the hackathon presentation</p>
+                <p>Save confirmation with the full JSON payload</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200/80 bg-slate-50/90 shadow-none">
+              <CardHeader>
+                <CardTitle>Planned next step</CardTitle>
+                <CardDescription>
+                  The questionnaire stays visible as a roadmap cue, but it is disabled.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter className="pt-0">
+                <Button variant="secondary" disabled className="w-full">
+                  Fill preferences later
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </section>
+
+        <section className="w-full max-w-xl">
+          <Card className="border-slate-200/80 bg-white/90 shadow-[0_20px_60px_-24px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+            <CardHeader>
+              <CardTitle>Create the first user</CardTitle>
+              <CardDescription>
+                Save the user to <span className="font-medium text-slate-800">data/users.json</span> and show the result below.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700" htmlFor="name">
+                    Name
+                  </label>
+                  <Input
+                    id="name"
+                    value={formState.name}
+                    onChange={(event) =>
+                      setFormState((current) => ({ ...current, name: event.target.value }))
+                    }
+                    placeholder="Marin"
+                    autoComplete="name"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700" htmlFor="email">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formState.email}
+                    onChange={(event) =>
+                      setFormState((current) => ({ ...current, email: event.target.value }))
+                    }
+                    placeholder="marin@skillswap.dev"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700" htmlFor="password">
+                    Password
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formState.password}
+                    onChange={(event) =>
+                      setFormState((current) => ({ ...current, password: event.target.value }))
+                    }
+                    placeholder="demo-password"
+                    autoComplete="new-password"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-sm font-medium text-slate-700">Auth method</span>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      type="button"
+                      variant={formState.authProvider === "email" ? "default" : "outline"}
+                      onClick={() => setFormState((current) => ({ ...current, authProvider: "email" }))}
+                    >
+                      Email
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formState.authProvider === "google" ? "default" : "outline"}
+                      onClick={() => setFormState((current) => ({ ...current, authProvider: "google" }))}
+                    >
+                      Gmail demo
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? "Saving..." : "Create user"}
+                  </Button>
+                  <Button type="button" variant="secondary" onClick={fillDemoGoogleLogin}>
+                    Prefill Gmail demo
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 space-y-6">
+            <Card className="border-slate-200/80 bg-white/90 shadow-[0_20px_60px_-24px_rgba(15,23,42,0.28)] backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle>Save status</CardTitle>
+                <CardDescription>{statusMessage}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Users saved</div>
+                    <div className="mt-2 text-2xl font-semibold text-slate-950">{savedUsers.length}</div>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Latest provider</div>
+                    <div className="mt-2 text-2xl font-semibold text-slate-950">
+                      {savedUser?.authProvider ?? formState.authProvider}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="mb-2 text-sm font-medium text-slate-700">Last saved user JSON</div>
+                  <pre className="overflow-auto rounded-2xl border border-slate-200 bg-slate-950 p-4 text-xs leading-6 text-slate-100">
+                    {savedUser
+                      ? JSON.stringify(savedUser, null, 2)
+                      : "Submit the form to inspect the stored user record."}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200/80 bg-white/90 shadow-[0_20px_60px_-24px_rgba(15,23,42,0.28)] backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle>Saved users preview</CardTitle>
+                <CardDescription>
+                  This confirms the JSON file can be read back after the write.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {savedUsers.length === 0 ? (
+                  <p className="text-sm text-slate-600">No users stored yet.</p>
+                ) : (
+                  savedUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className={cn(
+                        "rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm shadow-sm",
+                        savedUser?.id === user.id && "border-emerald-300 bg-emerald-50"
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="font-medium text-slate-950">{user.name}</div>
+                          <div className="text-slate-500">{user.email}</div>
+                        </div>
+                        <Badge variant="secondary" className="rounded-full">
+                          {user.authProvider}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
