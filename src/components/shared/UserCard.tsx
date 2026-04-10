@@ -8,9 +8,16 @@ import { XPBadge } from './XPBadge';
 type UserCardProps = {
   user: User;
   onConnect?: () => void;
+  connectLabel?: string;
+  disableConnect?: boolean;
 };
 
-export function UserCard({ user, onConnect }: UserCardProps) {
+export function UserCard({
+  user,
+  onConnect,
+  connectLabel = 'Conectar',
+  disableConnect = false,
+}: UserCardProps) {
   const initial = user.name.charAt(0).toUpperCase();
   const commonInterests = user.skillsToTeach.length > 0 ? user.skillsToTeach[0] : null;
 
@@ -72,9 +79,10 @@ export function UserCard({ user, onConnect }: UserCardProps) {
         {onConnect && (
           <Button
             onClick={onConnect}
+            disabled={disableConnect}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white"
           >
-            Conectar
+            {connectLabel}
           </Button>
         )}
       </div>

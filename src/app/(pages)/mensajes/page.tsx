@@ -1,28 +1,97 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SwappyHelper } from '@/components/shared/SwappyHelper';
-import { MOCK_CONVERSATIONS, CURRENT_USER, Conversation } from '@/lib/mockData';
-import { Send, ArrowLeft } from 'lucide-react';
+import { MOCK_CONVERSATIONS, CURRENT_USER, Conversation, Message, MOCK_USERS } from '@/lib/mockData';
+import { useUser } from '@/contexts/UserContext';
+import { Send, ArrowLeft, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Tab = 'directos' | 'grupos';
 
 export default function MensajesPage() {
+  const {
+    pendingIncomingRequests,
+    pendingSentRequests,
+    acceptedRequests,
+    acceptIncomingMatchRequest,
+    simulateAcceptSentMatchRequest,
+  } = useUser();
   const [activeTab, setActiveTab] = useState<Tab>('directos');
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [showConversationList, setShowConversationList] = useState(true);
+  const [messagesByConversation, setMessagesByConversation] = useState<Record<string, Message[]>>({});
 
-  const directConversations = MOCK_CONVERSATIONS.filter((c) => !c.isGroup);
-  const groupConversations = MOCK_CONVERSATIONS.filter((c) => c.isGroup);
+  const directConversations = useMemo(() => {
+    const baseDirect = MOCK_CONVERSATIONS.filter((conversation) => !conversation.isGroup);
+
+    const usersWithConversation = new Set(
+      baseDirect
+        .flatMap((conversation) =>
+          conversation.participants
+            .filter((participant) => participant.id !== CURRENT_USER.id)
+            .map((participant) => participant.id)
+        )
+        .filter(Boolean)
+    );
+
+    const acceptedUserIds = Array.from(
+      new Set(
+        acceptedRequests
+          .map((request) =>
+            request.fromUserId === CURRENT_USER.id ? request.toUserId : request.fromUserId
+          )
+          .filter((id) => id !== CURRENT_USER.id)
+      )
+    );
+
+    const dynamicConversations: Conversation[] = acceptedUserIds
+      .filter((userId) => !usersWithConversation.has(userId))
+      .map((userId) => {
+        const user = MOCK_USERS.find((candidate) => candidate.id === userId);
+        if (!user) return null;
+
+        return {
+          id: `match-${user.id}`,
+          participants: [CURRENT_USER, user],
+          messages: [],
+          isGroup: false,
+        };
+      })
+      .filter((conversation): conversation is Conversation => Boolean(conversation));
+
+    return [...baseDirect, ...dynamicConversations];
+  }, [acceptedRequests]);
+
+  const groupConversations = useMemo(
+    () => MOCK_CONVERSATIONS.filter((conversation) => conversation.isGroup),
+    []
+  );
 
   const conversations = activeTab === 'directos' ? directConversations : groupConversations;
 
+  const getMessages = (conversation: Conversation) => {
+    return messagesByConversation[conversation.id] ?? conversation.messages;
+  };
+
+  const getLastMessage = (conversation: Conversation) => {
+    const messages = getMessages(conversation);
+    return messages.length > 0 ? messages[messages.length - 1] : undefined;
+  };
+
   const handleSelectConversation = (conversation: Conversation) => {
+    setMessagesByConversation((previous) => {
+      if (previous[conversation.id]) return previous;
+      return {
+        ...previous,
+        [conversation.id]: conversation.messages,
+      };
+    });
+
     setSelectedConversation(conversation);
     setShowConversationList(false);
   };
@@ -33,10 +102,24 @@ export default function MensajesPage() {
   };
 
   const handleSendMessage = () => {
-    if (messageInput.trim()) {
-      // Mock: no hace nada, solo limpia el input
-      setMessageInput('');
-    }
+    if (!selectedConversation || !messageInput.trim()) return;
+
+    const newMessage: Message = {
+      id: `local-${Date.now()}`,
+      senderId: CURRENT_USER.id,
+      content: messageInput.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessagesByConversation((previous) => {
+      const currentMessages = previous[selectedConversation.id] ?? selectedConversation.messages;
+      return {
+        ...previous,
+        [selectedConversation.id]: [...currentMessages, newMessage],
+      };
+    });
+
+    setMessageInput('');
   };
 
   const getConversationName = (conversation: Conversation) => {
@@ -52,12 +135,83 @@ export default function MensajesPage() {
     return name.charAt(0).toUpperCase();
   };
 
+  const renderMatchNotifications = () => {
+    if (pendingIncomingRequests.length === 0 && pendingSentRequests.length === 0) {
+      return (
+        <Card className="p-4 mb-4">
+          <div className="flex items-center gap-2 text-gray-600">
+            <Bell className="w-4 h-4" />
+            <p className="text-sm">No hay notificaciones de match pendientes.</p>
+          </div>
+        </Card>
+      );
+    }
+
+    return (
+      <Card className="p-4 mb-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Bell className="w-4 h-4 text-orange-600" />
+          <h3 className="font-semibold text-gray-900">Notificaciones de match</h3>
+        </div>
+
+        {pendingIncomingRequests.map((request) => {
+          const sender = MOCK_USERS.find((user) => user.id === request.fromUserId);
+          if (!sender) return null;
+
+          return (
+            <div
+              key={request.id}
+              className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-3 flex flex-col gap-2"
+            >
+              <p className="text-sm text-orange-900">
+                {sender.name} quiere hacer match contigo.
+              </p>
+              <Button
+                size="sm"
+                className="bg-orange-500 hover:bg-orange-600 text-white w-fit"
+                onClick={() => acceptIncomingMatchRequest(sender.id)}
+              >
+                Aceptar solicitud
+              </Button>
+            </div>
+          );
+        })}
+
+        {pendingSentRequests.map((request) => {
+          const receiver = MOCK_USERS.find((user) => user.id === request.toUserId);
+          if (!receiver) return null;
+
+          return (
+            <div
+              key={request.id}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-3 flex flex-col gap-2"
+            >
+              <p className="text-sm text-gray-700">
+                Solicitud enviada a {receiver.name}. Esperando aceptación.
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-fit"
+                onClick={() => simulateAcceptSentMatchRequest(receiver.id)}
+              >
+                Simular aceptación
+              </Button>
+            </div>
+          );
+        })}
+      </Card>
+    );
+  };
+
   return (
     <div className="h-screen bg-white flex flex-col">
       {/* Mobile: Lista de conversaciones o vista de chat */}
       <div className="md:hidden flex-1 flex flex-col">
         {showConversationList ? (
           <div className="flex-1 flex flex-col">
+            <div className="px-4 pt-4">{renderMatchNotifications()}</div>
+
             {/* Tabs */}
             <div className="border-b border-gray-200 bg-white px-4 py-3">
               <div className="flex gap-4">
@@ -103,18 +257,18 @@ export default function MensajesPage() {
                         <h3 className="font-semibold text-gray-900 truncate">
                           {getConversationName(conversation)}
                         </h3>
-                        {conversation.lastMessage && (
+                        {getLastMessage(conversation) && (
                           <span className="text-xs text-gray-500 ml-2">
-                            {new Date(conversation.lastMessage.timestamp).toLocaleTimeString('es-ES', {
+                            {new Date(getLastMessage(conversation)!.timestamp).toLocaleTimeString('es-ES', {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
                           </span>
                         )}
                       </div>
-                      {conversation.lastMessage && (
+                      {getLastMessage(conversation) && (
                         <p className="text-sm text-gray-600 truncate">
-                          {conversation.lastMessage.content}
+                          {getLastMessage(conversation)!.content}
                         </p>
                       )}
                     </div>
@@ -148,7 +302,7 @@ export default function MensajesPage() {
 
               {/* Mensajes */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {selectedConversation.messages.map((message) => {
+                {getMessages(selectedConversation).map((message) => {
                   const isCurrentUser = message.senderId === CURRENT_USER.id;
                   return (
                     <div
@@ -184,7 +338,7 @@ export default function MensajesPage() {
                     placeholder="Escribe un mensaje..."
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSendMessage();
                     }}
                     className="flex-1"
@@ -206,6 +360,8 @@ export default function MensajesPage() {
       <div className="hidden md:flex flex-1 overflow-hidden">
         {/* Panel izquierdo: conversaciones */}
         <div className="w-1/3 border-r border-gray-200 flex flex-col">
+          <div className="px-4 pt-4">{renderMatchNotifications()}</div>
+
           {/* Tabs */}
           <div className="border-b border-gray-200 bg-white px-4 py-3">
             <div className="flex gap-4">
@@ -256,18 +412,18 @@ export default function MensajesPage() {
                       <h3 className="font-semibold text-gray-900 truncate">
                         {getConversationName(conversation)}
                       </h3>
-                      {conversation.lastMessage && (
+                      {getLastMessage(conversation) && (
                         <span className="text-xs text-gray-500 ml-2">
-                          {new Date(conversation.lastMessage.timestamp).toLocaleTimeString('es-ES', {
+                          {new Date(getLastMessage(conversation)!.timestamp).toLocaleTimeString('es-ES', {
                             hour: '2-digit',
                             minute: '2-digit',
                           })}
                         </span>
                       )}
                     </div>
-                    {conversation.lastMessage && (
+                    {getLastMessage(conversation) && (
                       <p className="text-sm text-gray-600 truncate">
-                        {conversation.lastMessage.content}
+                        {getLastMessage(conversation)!.content}
                       </p>
                     )}
                   </div>
@@ -300,7 +456,7 @@ export default function MensajesPage() {
 
               {/* Mensajes */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-                {selectedConversation.messages.map((message) => {
+                {getMessages(selectedConversation).map((message) => {
                   const isCurrentUser = message.senderId === CURRENT_USER.id;
                   return (
                     <div
@@ -336,7 +492,7 @@ export default function MensajesPage() {
                     placeholder="Escribe un mensaje..."
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSendMessage();
                     }}
                     className="flex-1"

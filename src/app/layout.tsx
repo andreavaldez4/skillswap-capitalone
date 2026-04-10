@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { UserProvider } from "@/contexts/UserContext";
+import { CommunityProvider } from "@/contexts/CommunityContext";
 
 // Fuente para headings/títulos
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -34,7 +35,9 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", plusJakartaSans.variable, inter.variable)}
     >
       <body className="min-h-full flex flex-col font-sans bg-white">
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <CommunityProvider>{children}</CommunityProvider>
+        </UserProvider>
       </body>
     </html>
   );
