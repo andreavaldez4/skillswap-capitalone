@@ -53,7 +53,7 @@ export function Navbar() {
         </div>
 
         {/* Usuario y XP */}
-        <Link href="/ajustes" className="flex items-center gap-3">
+        <Link href={`/perfil/${user.id}`} className="flex items-center gap-3">
           <XPBadge xp={user.xp} />
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-700 font-semibold">
             {initial}
