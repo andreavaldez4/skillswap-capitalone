@@ -20,7 +20,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Skill Swap - Intercambia habilidades, crece junto a otros",
+  title: "Skill Swap",
   description:
     "Plataforma comunitaria para intercambiar habilidades sin dinero",
 };
