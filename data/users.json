@@ -1,5 +1,47 @@
 [
   {
+    "id": "177abff3-99aa-4b36-8f83-347e93068d5a",
+    "name": "testing",
+    "realName": "",
+    "aboutMe": "",
+    "interests": [
+      "cooking",
+      "coding"
+    ],
+    "interestsOther": "",
+    "preferences": {
+      "wantsToLearn": [
+        "design"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [
+        "public speaking"
+      ],
+      "canTeachOther": "",
+      "learningStyle": [
+        "hands-on"
+      ],
+      "learningStyleOther": "",
+      "teachingStyle": [
+        "quick learner"
+      ],
+      "teachingStyleOther": "",
+      "availableHours": [
+        "Mon-17",
+        "Mon-18",
+        "Mon-19",
+        "Mon-20",
+        "Mon-21"
+      ]
+    },
+    "email": "mytest@hotmail.com",
+    "password": "test",
+    "authProvider": "email",
+    "questionnaireCompleted": true,
+    "createdAt": "2026-04-10T20:45:38.131Z",
+    "updatedAt": "2026-04-10T20:46:00.494Z"
+  },
+  {
     "id": "template-user-001",
     "name": "alex_user",
     "realName": "Alex",
