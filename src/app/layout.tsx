@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { UserProvider } from "@/contexts/UserContext";
+import { CommunityProvider } from "@/contexts/CommunityContext";
 
 // Fuente para headings/títulos
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -19,7 +20,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Skill Swap - Intercambia habilidades, crece junto a otros",
+  title: "Skill Swap",
   description:
     "Plataforma comunitaria para intercambiar habilidades sin dinero",
 };
@@ -40,7 +41,9 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col font-sans bg-white">
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <CommunityProvider>{children}</CommunityProvider>
+        </UserProvider>
       </body>
     </html>
   );

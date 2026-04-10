@@ -7,13 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { UserCard } from '@/components/shared/UserCard';
 import { SwappyHelper } from '@/components/shared/SwappyHelper';
 import { MOCK_USERS } from '@/lib/mockData';
-import { Users, MessageCircle, Globe, TrendingUp } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
+import { Users, MessageCircle, Globe, TrendingUp, Bell } from 'lucide-react';
 
 export default function InicioPage() {
   const router = useRouter();
-  const matchesCount = 3;
+  const {
+    pendingIncomingRequests,
+    pendingSentRequests,
+    acceptedRequests,
+    sendMatchRequest,
+    getMatchStatusWithUser,
+  } = useUser();
+  const matchesCount = pendingSentRequests.length;
   const communitiesCount = 2;
-  const newMessagesCount = 1;
+  const newMessagesCount = acceptedRequests.length;
 
   // Primeros 3 usuarios como matches recientes
   const recentMatches = MOCK_USERS.slice(0, 3);
@@ -63,7 +71,7 @@ export default function InicioPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">{matchesCount}</p>
-                <p className="text-sm text-gray-600">Matches esperando</p>
+                <p className="text-sm text-gray-600">Solicitudes enviadas</p>
               </div>
             </div>
           </Card>
@@ -93,11 +101,65 @@ export default function InicioPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">{newMessagesCount}</p>
-                <p className="text-sm text-gray-600">Mensaje nuevo</p>
+                <p className="text-sm text-gray-600">Chats habilitados</p>
               </div>
             </div>
           </Card>
         </div>
+
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Bell className="w-5 h-5 text-orange-500" />
+            <h3 className="text-lg font-semibold text-gray-900">Notificaciones de match</h3>
+          </div>
+          {pendingIncomingRequests.length + pendingSentRequests.length > 0 ? (
+            <div className="space-y-3">
+              {pendingIncomingRequests.map((request) => {
+                const sender = MOCK_USERS.find((u) => u.id === request.fromUserId);
+                if (!sender) return null;
+
+                return (
+                  <div
+                    key={request.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3"
+                  >
+                    <p className="text-sm text-orange-900">
+                      {sender.name} te envió una solicitud de match.
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => router.push('/mensajes')}
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                    >
+                      Revisar en mensajes
+                    </Button>
+                  </div>
+                );
+              })}
+
+              {pendingSentRequests.map((request) => {
+                const receiver = MOCK_USERS.find((u) => u.id === request.toUserId);
+                if (!receiver) return null;
+
+                return (
+                  <div
+                    key={request.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3"
+                  >
+                    <p className="text-sm text-gray-700">
+                      Solicitud enviada a {receiver.name}. En espera de aceptación.
+                    </p>
+                    <Button size="sm" variant="outline" onClick={() => router.push('/mensajes')}>
+                      Ver estado
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-600">No tienes notificaciones nuevas por ahora.</p>
+          )}
+        </Card>
 
         {/* Matches recientes */}
         <div>
@@ -116,9 +178,21 @@ export default function InicioPage() {
               <UserCard
                 key={user.id}
                 user={user}
+                connectLabel={
+                  getMatchStatusWithUser(user.id) === 'pending_sent'
+                    ? 'Solicitud enviada'
+                    : getMatchStatusWithUser(user.id) === 'accepted'
+                      ? 'Ir a mensajes'
+                      : 'Conectar'
+                }
+                disableConnect={getMatchStatusWithUser(user.id) === 'pending_sent'}
                 onConnect={() => {
-                  // Mock: redirigir a mensajes
-                  router.push('/mensajes');
+                  if (getMatchStatusWithUser(user.id) === 'accepted') {
+                    router.push('/mensajes');
+                    return;
+                  }
+
+                  sendMatchRequest(user.id);
                 }}
               />
             ))}
