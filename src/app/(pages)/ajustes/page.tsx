@@ -15,10 +15,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { SkillChip } from '@/components/shared/SkillChip';
-import { XPBadge } from '@/components/shared/XPBadge';
+import { ProfileSummary } from '@/components/shared/ProfileSummary';
 import { useUser } from '@/contexts/UserContext';
 import { SKILLS, Skill } from '@/lib/mockData';
-import { getProgressToNextLevel, getNextLevelTitle, getXPToNextLevel } from '@/lib/xpSystem';
 import { User, Briefcase, CalendarDays, Bell, Globe, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,10 +55,6 @@ export default function AjustesPage() {
   });
   const [language, setLanguage] = useState('es');
 
-  const progress = getProgressToNextLevel(user.xp);
-  const nextLevel = getNextLevelTitle(user.xp);
-  const xpToNext = getXPToNextLevel(user.xp);
-
   const toggleSkillToTeach = (skill: Skill) => {
     setSkillsToTeach((prev) =>
       prev.includes(skill) ? prev.filter((s) => s.id !== skill.id) : [...prev, skill]
@@ -95,8 +90,6 @@ export default function AjustesPage() {
     });
     alert('Cambios guardados');
   };
-
-  const initial = user.name.charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-orange-50">
@@ -151,39 +144,11 @@ export default function AjustesPage() {
             {/* Perfil */}
             {activeSection === 'perfil' && (
               <div className="space-y-6">
+                <ProfileSummary user={user} actionHref={`/perfil/${user.id}`} actionLabel="Ver mi perfil público" />
+
                 <Card className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Información del perfil</h2>
+                  <h2 className="text-xl font-semibold mb-4">Información editable</h2>
                   <div className="space-y-4">
-                    {/* Avatar */}
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 rounded-full bg-orange-200 flex items-center justify-center text-orange-700 font-semibold text-2xl">
-                        {initial}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{user.name}</p>
-                        <XPBadge xp={user.xp} />
-                      </div>
-                    </div>
-
-                    {/* Barra de progreso XP */}
-                    <div className="bg-gray-100 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">
-                          Progreso hacia {nextLevel || 'máximo nivel'}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {nextLevel ? `${xpToNext} XP restantes` : 'Nivel máximo alcanzado'}
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div
-                          className="bg-orange-500 h-3 rounded-full transition-all"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Campos editables */}
                     <div>
                       <Label htmlFor="name">Nombre</Label>
                       <Input

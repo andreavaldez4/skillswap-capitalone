@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { User } from '@/lib/mockData';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,8 @@ type UserCardProps = {
   onConnect?: () => void;
   connectLabel?: string;
   disableConnect?: boolean;
+  profileHref?: string;
+  profileLabel?: string;
 };
 
 export function UserCard({
@@ -17,6 +20,8 @@ export function UserCard({
   onConnect,
   connectLabel = 'Conectar',
   disableConnect = false,
+  profileHref,
+  profileLabel = 'Ver perfil',
 }: UserCardProps) {
   const initial = user.name.charAt(0).toUpperCase();
   const commonInterests = user.skillsToTeach.length > 0 ? user.skillsToTeach[0] : null;
@@ -75,15 +80,27 @@ export function UserCard({
           </Badge>
         )}
 
-        {/* Botón conectar */}
-        {onConnect && (
-          <Button
-            onClick={onConnect}
-            disabled={disableConnect}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-          >
-            {connectLabel}
-          </Button>
+        {(onConnect || profileHref) && (
+          <div className="flex flex-col gap-2 sm:flex-row">
+            {profileHref && (
+              <Button
+                asChild
+                variant="outline"
+                className="flex-1 border-orange-200 text-orange-700 hover:bg-orange-50"
+              >
+                <Link href={profileHref}>{profileLabel}</Link>
+              </Button>
+            )}
+            {onConnect && (
+              <Button
+                onClick={onConnect}
+                disabled={disableConnect}
+                className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
+              >
+                {connectLabel}
+              </Button>
+            )}
+          </div>
         )}
       </div>
     </Card>
