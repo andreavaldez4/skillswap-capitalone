@@ -13,6 +13,19 @@ type UserPayload = {
   realName?: string;
   aboutMe?: string;
   interests?: string[];
+  interestsOther?: string;
+  questionnaireCompleted?: boolean;
+  preferences?: {
+    wantsToLearn?: string[];
+    wantsToLearnOther?: string;
+    canTeach?: string[];
+    canTeachOther?: string;
+    learningStyle?: string[];
+    learningStyleOther?: string;
+    teachingStyle?: string[];
+    teachingStyleOther?: string;
+    availableHours?: string[];
+  };
 };
 
 function parseProvider(provider: unknown): LoginProvider {
@@ -56,6 +69,9 @@ export async function POST(request: Request) {
     realName: payload.realName,
     aboutMe: payload.aboutMe,
     interests: payload.interests,
+    interestsOther: payload.interestsOther,
+    preferences: payload.preferences,
+    questionnaireCompleted: payload.questionnaireCompleted,
   });
 
   const users = await listUsers();

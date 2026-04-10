@@ -1,26 +1,50 @@
 [
   {
-    "id": "c137aff3-dbf1-41b7-ab9d-58887899f4b4",
-    "name": "marin",
-    "realName": "mr bruf",
-    "aboutMe": "1 mas 1 es igual a 2",
+    "id": "template-user-001",
+    "name": "alex_user",
+    "realName": "Alex",
+    "aboutMe": "I enjoy learning and helping others grow.",
     "interests": [
-      "cooking",
+      "reading",
       "music",
-      "coding"
+      "fitness"
     ],
-    "email": "gyat@gmail.com",
-    "password": "fortnite123",
+    "interestsOther": "",
+    "email": "alex.user@example.com",
+    "password": "password123",
     "authProvider": "email",
-    "questionnaireCompleted": false,
+    "questionnaireCompleted": true,
     "preferences": {
-      "wantsToLearn": "",
-      "canTeach": "",
-      "learningStyle": "",
-      "teachingStyle": "",
-      "availableHours": ""
+      "wantsToLearn": [
+        "public speaking",
+        "design"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [
+        "coding",
+        "math"
+      ],
+      "canTeachOther": "",
+      "learningStyle": [
+        "hands-on",
+        "slow and steady"
+      ],
+      "learningStyleOther": "",
+      "teachingStyle": [
+        "one-on-one",
+        "examples first"
+      ],
+      "teachingStyleOther": "",
+      "availableHours": [
+        "Mon-18",
+        "Mon-19",
+        "Wed-18",
+        "Wed-19",
+        "Sat-10",
+        "Sat-11"
+      ]
     },
-    "createdAt": "2026-04-10T19:58:20.938Z",
-    "updatedAt": "2026-04-10T19:58:20.938Z"
+    "createdAt": "2026-04-10T21:00:00.000Z",
+    "updatedAt": "2026-04-10T21:00:00.000Z"
   }
 ]
