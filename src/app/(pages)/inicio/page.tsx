@@ -178,6 +178,7 @@ export default function InicioPage() {
               <UserCard
                 key={user.id}
                 user={user}
+                profileHref={`/perfil/${user.id}`}
                 connectLabel={
                   getMatchStatusWithUser(user.id) === 'pending_sent'
                     ? 'Solicitud enviada'

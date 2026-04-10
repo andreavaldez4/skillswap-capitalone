@@ -239,6 +239,7 @@ export default function MatchesPage() {
                 <UserCard
                   key={user.id}
                   user={user}
+                  profileHref={`/perfil/${user.id}`}
                   connectLabel={
                     status === 'accepted'
                       ? 'Ir a mensajes'
