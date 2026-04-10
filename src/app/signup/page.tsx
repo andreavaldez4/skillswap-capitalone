@@ -15,6 +15,14 @@ type ApiResponse = {
   error?: string;
 };
 
+type MultiField = "interests" | "wantsToLearn" | "learningStyle" | "canTeach" | "teachingStyle";
+type MultiOtherField =
+  | "interestsOther"
+  | "wantsToLearnOther"
+  | "learningStyleOther"
+  | "canTeachOther"
+  | "teachingStyleOther";
+
 const interestOptions = [
   "cocina",
   "deportes",
@@ -110,16 +118,33 @@ export default function SignupPage() {
   const [availabilityDragMode, setAvailabilityDragMode] = useState<"add" | "remove" | null>(null);
   const availabilityVisitedSlots = useRef<Set<string>>(new Set());
 
-  function toggleMulti(
-    field: "interests" | "wantsToLearn" | "learningStyle" | "canTeach" | "teachingStyle",
-    value: string
-  ) {
+  function toggleMulti(field: MultiField, value: string) {
     setFormState((current) => ({
       ...current,
       [field]: current[field].includes(value)
         ? current[field].filter((item) => item !== value)
         : [...current[field], value],
     }));
+  }
+
+  function getChipOptions(baseOptions: string[], selected: string[]) {
+    return [...baseOptions, ...selected.filter((item) => !baseOptions.includes(item))];
+  }
+
+  function addCustomOption(field: MultiField, otherField: MultiOtherField) {
+    setFormState((current) => {
+      const value = current[otherField].trim().toLowerCase();
+      if (!value) {
+        return current;
+      }
+
+      const alreadyExists = current[field].some((item) => item.toLowerCase() === value);
+      return {
+        ...current,
+        [field]: alreadyExists ? current[field] : [...current[field], value],
+        [otherField]: "",
+      };
+    });
   }
 
   function applyAvailabilitySlot(slotId: string, mode: "add" | "remove") {
@@ -303,7 +328,7 @@ export default function SignupPage() {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-900">Intereses</p>
                   <div className="flex flex-wrap gap-2">
-                    {interestOptions.map((interest) => (
+                    {getChipOptions(interestOptions, formState.interests).map((interest) => (
                       <Button
                         key={interest}
                         type="button"
@@ -320,28 +345,31 @@ export default function SignupPage() {
                         {interest}
                       </Button>
                     ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formState.interestsOther}
+                      onChange={(event) =>
+                        setFormState((current) => ({ ...current, interestsOther: event.target.value }))
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addCustomOption("interests", "interestsOther");
+                        }
+                      }}
+                      placeholder="Agregar otro interés"
+                      className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                    />
                     <Button
                       type="button"
-                      size="sm"
-                      className={cn(
-                        "rounded-full",
-                        formState.interestsOther
-                          ? "bg-orange-600 text-white hover:bg-orange-700"
-                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
-                      )}
                       variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() => addCustomOption("interests", "interestsOther")}
                     >
-                      Otro
+                      Agregar
                     </Button>
                   </div>
-                  <Input
-                    value={formState.interestsOther}
-                    onChange={(event) =>
-                      setFormState((current) => ({ ...current, interestsOther: event.target.value }))
-                    }
-                    placeholder="Especifica otro interés"
-                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
-                  />
                 </div>
 
                 <div>
@@ -374,7 +402,7 @@ export default function SignupPage() {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-900">¿Qué quieres aprender?</p>
                   <div className="flex flex-wrap gap-2">
-                    {learningTopicOptions.map((topic) => (
+                    {getChipOptions(learningTopicOptions, formState.wantsToLearn).map((topic) => (
                       <Button
                         key={topic}
                         type="button"
@@ -391,34 +419,37 @@ export default function SignupPage() {
                         {topic}
                       </Button>
                     ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formState.wantsToLearnOther}
+                      onChange={(event) =>
+                        setFormState((current) => ({ ...current, wantsToLearnOther: event.target.value }))
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addCustomOption("wantsToLearn", "wantsToLearnOther");
+                        }
+                      }}
+                      placeholder="Agregar otro tema"
+                      className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                    />
                     <Button
                       type="button"
-                      size="sm"
-                      className={cn(
-                        "rounded-full",
-                        formState.wantsToLearnOther
-                          ? "bg-orange-600 text-white hover:bg-orange-700"
-                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
-                      )}
                       variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() => addCustomOption("wantsToLearn", "wantsToLearnOther")}
                     >
-                      Otro
+                      Agregar
                     </Button>
                   </div>
-                  <Input
-                    value={formState.wantsToLearnOther}
-                    onChange={(event) =>
-                      setFormState((current) => ({ ...current, wantsToLearnOther: event.target.value }))
-                    }
-                    placeholder="Especifica otro tema"
-                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
-                  />
                 </div>
 
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-900">Estilo de aprendizaje</p>
                   <div className="flex flex-wrap gap-2">
-                    {learningStyleOptions.map((style) => (
+                    {getChipOptions(learningStyleOptions, formState.learningStyle).map((style) => (
                       <Button
                         key={style}
                         type="button"
@@ -435,28 +466,31 @@ export default function SignupPage() {
                         {style}
                       </Button>
                     ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formState.learningStyleOther}
+                      onChange={(event) =>
+                        setFormState((current) => ({ ...current, learningStyleOther: event.target.value }))
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addCustomOption("learningStyle", "learningStyleOther");
+                        }
+                      }}
+                      placeholder="Agregar otro estilo"
+                      className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                    />
                     <Button
                       type="button"
-                      size="sm"
-                      className={cn(
-                        "rounded-full",
-                        formState.learningStyleOther
-                          ? "bg-orange-600 text-white hover:bg-orange-700"
-                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
-                      )}
                       variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() => addCustomOption("learningStyle", "learningStyleOther")}
                     >
-                      Otro
+                      Agregar
                     </Button>
                   </div>
-                  <Input
-                    value={formState.learningStyleOther}
-                    onChange={(event) =>
-                      setFormState((current) => ({ ...current, learningStyleOther: event.target.value }))
-                    }
-                    placeholder="Especifica otro estilo"
-                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
-                  />
                 </div>
               </>
             )}
@@ -466,7 +500,7 @@ export default function SignupPage() {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-900">¿Qué puedes enseñar?</p>
                   <div className="flex flex-wrap gap-2">
-                    {teachingTopicOptions.map((topic) => (
+                    {getChipOptions(teachingTopicOptions, formState.canTeach).map((topic) => (
                       <Button
                         key={topic}
                         type="button"
@@ -483,34 +517,37 @@ export default function SignupPage() {
                         {topic}
                       </Button>
                     ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formState.canTeachOther}
+                      onChange={(event) =>
+                        setFormState((current) => ({ ...current, canTeachOther: event.target.value }))
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addCustomOption("canTeach", "canTeachOther");
+                        }
+                      }}
+                      placeholder="Agregar otro tema"
+                      className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                    />
                     <Button
                       type="button"
-                      size="sm"
-                      className={cn(
-                        "rounded-full",
-                        formState.canTeachOther
-                          ? "bg-orange-600 text-white hover:bg-orange-700"
-                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
-                      )}
                       variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() => addCustomOption("canTeach", "canTeachOther")}
                     >
-                      Otro
+                      Agregar
                     </Button>
                   </div>
-                  <Input
-                    value={formState.canTeachOther}
-                    onChange={(event) =>
-                      setFormState((current) => ({ ...current, canTeachOther: event.target.value }))
-                    }
-                    placeholder="Especifica otro tema"
-                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
-                  />
                 </div>
 
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-900">Estilo de enseñanza</p>
                   <div className="flex flex-wrap gap-2">
-                    {teachingStyleOptions.map((style) => (
+                    {getChipOptions(teachingStyleOptions, formState.teachingStyle).map((style) => (
                       <Button
                         key={style}
                         type="button"
@@ -527,28 +564,31 @@ export default function SignupPage() {
                         {style}
                       </Button>
                     ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formState.teachingStyleOther}
+                      onChange={(event) =>
+                        setFormState((current) => ({ ...current, teachingStyleOther: event.target.value }))
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addCustomOption("teachingStyle", "teachingStyleOther");
+                        }
+                      }}
+                      placeholder="Agregar otro estilo"
+                      className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                    />
                     <Button
                       type="button"
-                      size="sm"
-                      className={cn(
-                        "rounded-full",
-                        formState.teachingStyleOther
-                          ? "bg-orange-600 text-white hover:bg-orange-700"
-                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
-                      )}
                       variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() => addCustomOption("teachingStyle", "teachingStyleOther")}
                     >
-                      Otro
+                      Agregar
                     </Button>
                   </div>
-                  <Input
-                    value={formState.teachingStyleOther}
-                    onChange={(event) =>
-                      setFormState((current) => ({ ...current, teachingStyleOther: event.target.value }))
-                    }
-                    placeholder="Especifica otro estilo"
-                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
-                  />
                 </div>
 
                 <div className="space-y-3">
