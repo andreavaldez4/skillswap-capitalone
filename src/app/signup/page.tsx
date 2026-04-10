@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -16,63 +16,63 @@ type ApiResponse = {
 };
 
 const interestOptions = [
-  "cooking",
-  "sports",
-  "reading",
-  "music",
-  "coding",
-  "travel",
-  "games",
+  "cocina",
+  "deportes",
+  "lectura",
+  "musica",
+  "programacion",
+  "viajes",
+  "videojuegos",
   "fitness",
-  "art",
-  "photography",
+  "arte",
+  "fotografia",
 ];
 
 const learningTopicOptions = [
-  "coding",
-  "design",
-  "public speaking",
-  "music",
-  "language",
-  "writing",
-  "photography",
+  "programacion",
+  "diseno",
+  "oratoria",
+  "musica",
+  "idiomas",
+  "escritura",
+  "fotografia",
   "fitness",
 ];
 
 const learningStyleOptions = [
-  "slow and steady",
-  "quick learner",
-  "hands-on",
+  "paso a paso",
+  "aprendizaje rapido",
+  "practico",
   "visual",
-  "one-on-one",
-  "group sessions",
-  "project-based",
-  "examples first",
+  "uno a uno",
+  "sesiones grupales",
+  "basado en proyectos",
+  "primero ejemplos",
 ];
 
 const teachingTopicOptions = [
-  "coding",
-  "math",
-  "music",
-  "language",
+  "programacion",
+  "matematicas",
+  "musica",
+  "idiomas",
   "fitness",
-  "public speaking",
-  "design",
-  "writing",
+  "oratoria",
+  "diseno",
+  "escritura",
 ];
 
 const teachingStyleOptions = [
-  "slow and steady",
-  "quick learner",
-  "hands-on",
+  "paso a paso",
+  "aprendizaje rapido",
+  "practico",
   "visual",
-  "one-on-one",
-  "group sessions",
-  "project-based",
-  "practice-first",
+  "uno a uno",
+  "sesiones grupales",
+  "basado en proyectos",
+  "practica primero",
 ];
 
-const calendarDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const calendarDays = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"];
 const calendarHours = ["08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"];
 
 function formatHourLabel(hour24: string) {
@@ -172,7 +172,7 @@ export default function SignupPage() {
     return () => window.removeEventListener("mouseup", onMouseUp);
   }, [isDraggingAvailability]);
 
-  async function saveProfile(payload: object, message: string) {
+  async function saveProfile(payload: object) {
     setIsSubmitting(true);
     setStatusMessage("");
 
@@ -183,15 +183,14 @@ export default function SignupPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = (await response.json()) as ApiResponse;
+      await response.json() as ApiResponse;
       if (!response.ok) {
-        throw new Error(data.error ?? "Unable to save profile.");
+        throw new Error("No se pudo guardar tu perfil.");
       }
 
-      setStatusMessage(message);
       return true;
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : "Unexpected save error.");
+      setStatusMessage(error instanceof Error ? error.message : "Ocurrio un error al guardar.");
       return false;
     } finally {
       setIsSubmitting(false);
@@ -202,7 +201,7 @@ export default function SignupPage() {
     event.preventDefault();
 
     if (currentStep === 1) {
-      const ok = await saveProfile(formState, "Step 1 saved.");
+      const ok = await saveProfile(formState);
       if (ok) setCurrentStep(2);
       return;
     }
@@ -217,8 +216,7 @@ export default function SignupPage() {
             learningStyle: formState.learningStyle,
             learningStyleOther: formState.learningStyleOther,
           },
-        },
-        "Step 2 saved."
+        }
       );
       if (ok) setCurrentStep(3);
       return;
@@ -239,8 +237,7 @@ export default function SignupPage() {
           teachingStyleOther: formState.teachingStyleOther,
           availableHours: formState.availableHours,
         },
-      },
-      "Signup complete."
+      }
     );
 
     if (ok) {
@@ -249,52 +246,75 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-8">
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
-          <CardDescription>
-            {currentStep === 1 && "Account information"}
-            {currentStep === 2 && "Learning preferences"}
-            {currentStep === 3 && "Teaching preferences"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-orange-100">
+        <div className="mx-auto max-w-7xl px-6 py-4">
+          <div className="text-2xl font-bold text-orange-600">SkillSwap</div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex items-center justify-center px-4 py-8">
+        <Card className="w-full max-w-3xl border-0 shadow-lg">
+          <CardContent className="pt-8">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">Crear cuenta</h1>
+              <p className="mt-1 text-sm text-gray-600">
+                {currentStep === 1 && "Información de tu cuenta"}
+                {currentStep === 2 && "¿Qué quieres aprender?"}
+                {currentStep === 3 && "¿Qué puedes enseñar?"}
+              </p>
+            </div>
+
+            <form className="space-y-5" onSubmit={handleSubmit}>
             {currentStep === 1 && (
               <>
-                <Input
-                  value={formState.name}
-                  onChange={(event) => setFormState((current) => ({ ...current, name: event.target.value }))}
-                  placeholder="Username"
-                  required
-                />
-                <Input
-                  value={formState.realName}
-                  onChange={(event) =>
-                    setFormState((current) => ({ ...current, realName: event.target.value }))
-                  }
-                  placeholder="Real name (optional)"
-                />
-                <textarea
-                  value={formState.aboutMe}
-                  onChange={(event) =>
-                    setFormState((current) => ({ ...current, aboutMe: event.target.value }))
-                  }
-                  placeholder="About you (optional)"
-                  className="min-h-24 w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
-                />
+                <div>
+                  <Input
+                    value={formState.name}
+                    onChange={(event) => setFormState((current) => ({ ...current, name: event.target.value }))}
+                    placeholder="Nombre de usuario"
+                    required
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <Input
+                    value={formState.realName}
+                    onChange={(event) =>
+                      setFormState((current) => ({ ...current, realName: event.target.value }))
+                    }
+                    placeholder="Nombre completo (opcional)"
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <textarea
+                    value={formState.aboutMe}
+                    onChange={(event) =>
+                      setFormState((current) => ({ ...current, aboutMe: event.target.value }))
+                    }
+                    placeholder="Acerca de ti (opcional)"
+                    className="min-h-24 w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400"
+                  />
+                </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Interests</p>
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-900">Intereses</p>
                   <div className="flex flex-wrap gap-2">
                     {interestOptions.map((interest) => (
                       <Button
                         key={interest}
                         type="button"
                         size="sm"
-                        variant={formState.interests.includes(interest) ? "default" : "outline"}
-                        className="rounded-full capitalize"
+                        className={cn(
+                          "rounded-full capitalize",
+                          formState.interests.includes(interest)
+                            ? "bg-orange-600 text-white hover:bg-orange-700"
+                            : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                        )}
+                        variant="outline"
                         onClick={() => toggleMulti("interests", interest)}
                       >
                         {interest}
@@ -303,10 +323,15 @@ export default function SignupPage() {
                     <Button
                       type="button"
                       size="sm"
-                      variant={formState.interestsOther ? "default" : "outline"}
-                      className="rounded-full"
+                      className={cn(
+                        "rounded-full",
+                        formState.interestsOther
+                          ? "bg-orange-600 text-white hover:bg-orange-700"
+                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                      )}
+                      variant="outline"
                     >
-                      Other
+                      Otro
                     </Button>
                   </div>
                   <Input
@@ -314,48 +339,70 @@ export default function SignupPage() {
                     onChange={(event) =>
                       setFormState((current) => ({ ...current, interestsOther: event.target.value }))
                     }
-                    placeholder="Other interest"
+                    placeholder="Especifica otro interés"
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
                   />
                 </div>
 
-                <Input
-                  type="email"
-                  value={formState.email}
-                  onChange={(event) => setFormState((current) => ({ ...current, email: event.target.value }))}
-                  placeholder="Email"
-                  required
-                />
-                <Input
-                  type="password"
-                  value={formState.password}
-                  onChange={(event) =>
-                    setFormState((current) => ({ ...current, password: event.target.value }))
-                  }
-                  placeholder="Password"
-                  required
-                />
+                <div>
+                  <Input
+                    type="email"
+                    value={formState.email}
+                    onChange={(event) => setFormState((current) => ({ ...current, email: event.target.value }))}
+                    placeholder="Email"
+                    required
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="password"
+                    value={formState.password}
+                    onChange={(event) =>
+                      setFormState((current) => ({ ...current, password: event.target.value }))
+                    }
+                    placeholder="Contraseña"
+                    required
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
+                  />
+                </div>
               </>
             )}
 
             {currentStep === 2 && (
               <>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">What do you want to learn?</p>
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-900">¿Qué quieres aprender?</p>
                   <div className="flex flex-wrap gap-2">
                     {learningTopicOptions.map((topic) => (
                       <Button
                         key={topic}
                         type="button"
                         size="sm"
-                        variant={formState.wantsToLearn.includes(topic) ? "default" : "outline"}
-                        className="rounded-full capitalize"
+                        className={cn(
+                          "rounded-full capitalize",
+                          formState.wantsToLearn.includes(topic)
+                            ? "bg-orange-600 text-white hover:bg-orange-700"
+                            : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                        )}
+                        variant="outline"
                         onClick={() => toggleMulti("wantsToLearn", topic)}
                       >
                         {topic}
                       </Button>
                     ))}
-                    <Button type="button" size="sm" variant={formState.wantsToLearnOther ? "default" : "outline"} className="rounded-full">
-                      Other
+                    <Button
+                      type="button"
+                      size="sm"
+                      className={cn(
+                        "rounded-full",
+                        formState.wantsToLearnOther
+                          ? "bg-orange-600 text-white hover:bg-orange-700"
+                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                      )}
+                      variant="outline"
+                    >
+                      Otro
                     </Button>
                   </div>
                   <Input
@@ -363,27 +410,43 @@ export default function SignupPage() {
                     onChange={(event) =>
                       setFormState((current) => ({ ...current, wantsToLearnOther: event.target.value }))
                     }
-                    placeholder="Other learning topic"
+                    placeholder="Especifica otro tema"
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Learning style</p>
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-900">Estilo de aprendizaje</p>
                   <div className="flex flex-wrap gap-2">
                     {learningStyleOptions.map((style) => (
                       <Button
                         key={style}
                         type="button"
                         size="sm"
-                        variant={formState.learningStyle.includes(style) ? "default" : "outline"}
-                        className="rounded-full capitalize"
+                        className={cn(
+                          "rounded-full capitalize",
+                          formState.learningStyle.includes(style)
+                            ? "bg-orange-600 text-white hover:bg-orange-700"
+                            : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                        )}
+                        variant="outline"
                         onClick={() => toggleMulti("learningStyle", style)}
                       >
                         {style}
                       </Button>
                     ))}
-                    <Button type="button" size="sm" variant={formState.learningStyleOther ? "default" : "outline"} className="rounded-full">
-                      Other
+                    <Button
+                      type="button"
+                      size="sm"
+                      className={cn(
+                        "rounded-full",
+                        formState.learningStyleOther
+                          ? "bg-orange-600 text-white hover:bg-orange-700"
+                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                      )}
+                      variant="outline"
+                    >
+                      Otro
                     </Button>
                   </div>
                   <Input
@@ -391,7 +454,8 @@ export default function SignupPage() {
                     onChange={(event) =>
                       setFormState((current) => ({ ...current, learningStyleOther: event.target.value }))
                     }
-                    placeholder="Other learning style"
+                    placeholder="Especifica otro estilo"
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
                   />
                 </div>
               </>
@@ -399,23 +463,38 @@ export default function SignupPage() {
 
             {currentStep === 3 && (
               <>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">What can you teach?</p>
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-900">¿Qué puedes enseñar?</p>
                   <div className="flex flex-wrap gap-2">
                     {teachingTopicOptions.map((topic) => (
                       <Button
                         key={topic}
                         type="button"
                         size="sm"
-                        variant={formState.canTeach.includes(topic) ? "default" : "outline"}
-                        className="rounded-full capitalize"
+                        className={cn(
+                          "rounded-full capitalize",
+                          formState.canTeach.includes(topic)
+                            ? "bg-orange-600 text-white hover:bg-orange-700"
+                            : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                        )}
+                        variant="outline"
                         onClick={() => toggleMulti("canTeach", topic)}
                       >
                         {topic}
                       </Button>
                     ))}
-                    <Button type="button" size="sm" variant={formState.canTeachOther ? "default" : "outline"} className="rounded-full">
-                      Other
+                    <Button
+                      type="button"
+                      size="sm"
+                      className={cn(
+                        "rounded-full",
+                        formState.canTeachOther
+                          ? "bg-orange-600 text-white hover:bg-orange-700"
+                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                      )}
+                      variant="outline"
+                    >
+                      Otro
                     </Button>
                   </div>
                   <Input
@@ -423,27 +502,43 @@ export default function SignupPage() {
                     onChange={(event) =>
                       setFormState((current) => ({ ...current, canTeachOther: event.target.value }))
                     }
-                    placeholder="Other teaching topic"
+                    placeholder="Especifica otro tema"
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Teaching style</p>
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-900">Estilo de enseñanza</p>
                   <div className="flex flex-wrap gap-2">
                     {teachingStyleOptions.map((style) => (
                       <Button
                         key={style}
                         type="button"
                         size="sm"
-                        variant={formState.teachingStyle.includes(style) ? "default" : "outline"}
-                        className="rounded-full capitalize"
+                        className={cn(
+                          "rounded-full capitalize",
+                          formState.teachingStyle.includes(style)
+                            ? "bg-orange-600 text-white hover:bg-orange-700"
+                            : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                        )}
+                        variant="outline"
                         onClick={() => toggleMulti("teachingStyle", style)}
                       >
                         {style}
                       </Button>
                     ))}
-                    <Button type="button" size="sm" variant={formState.teachingStyleOther ? "default" : "outline"} className="rounded-full">
-                      Other
+                    <Button
+                      type="button"
+                      size="sm"
+                      className={cn(
+                        "rounded-full",
+                        formState.teachingStyleOther
+                          ? "bg-orange-600 text-white hover:bg-orange-700"
+                          : "border border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                      )}
+                      variant="outline"
+                    >
+                      Otro
                     </Button>
                   </div>
                   <Input
@@ -451,25 +546,26 @@ export default function SignupPage() {
                     onChange={(event) =>
                       setFormState((current) => ({ ...current, teachingStyleOther: event.target.value }))
                     }
-                    placeholder="Other teaching style"
+                    placeholder="Especifica otro estilo"
+                    className="border-gray-300 bg-white px-4 py-3 text-gray-900"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Available hours</p>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3" onMouseLeave={stopAvailabilityDrag}>
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-900">Horarios disponibles</p>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4" onMouseLeave={stopAvailabilityDrag}>
                     <div className="overflow-x-auto">
                       <div className="grid min-w-[720px] grid-cols-[88px_repeat(7,minmax(70px,1fr))] gap-1 text-xs">
-                        <div className="p-2 font-medium text-slate-500">Time</div>
+                        <div className="p-2 font-medium text-gray-600">Hora</div>
                         {calendarDays.map((day) => (
-                          <div key={day} className="p-2 text-center font-medium text-slate-500">
+                          <div key={day} className="p-2 text-center font-medium text-gray-600">
                             {day}
                           </div>
                         ))}
 
                         {calendarHours.map((hour) => (
                           <div key={hour} className="contents">
-                            <div className="p-2 text-slate-500">{formatHourLabel(hour)}</div>
+                            <div className="p-2 text-gray-600">{formatHourLabel(hour)}</div>
                             {calendarDays.map((day) => {
                               const slotId = `${day}-${hour}`;
                               const isSelected = formState.availableHours.includes(slotId);
@@ -483,8 +579,8 @@ export default function SignupPage() {
                                   className={cn(
                                     "h-8 select-none rounded-md border transition",
                                     isSelected
-                                      ? "border-emerald-500 bg-emerald-500 text-white"
-                                      : "border-slate-300 bg-white hover:border-emerald-300"
+                                      ? "border-orange-500 bg-orange-500 text-white"
+                                      : "border-gray-300 bg-white hover:border-orange-300 hover:bg-orange-50"
                                   )}
                                   aria-label={`${day} ${formatHourLabel(hour)}`}
                                 >
@@ -496,7 +592,7 @@ export default function SignupPage() {
                         ))}
                       </div>
                     </div>
-                    <div className="mt-2 text-xs text-slate-600">Selected slots: {formState.availableHours.length}</div>
+                    <div className="mt-3 text-xs text-gray-600">Slots seleccionados: {formState.availableHours.length}</div>
                   </div>
                 </div>
               </>
@@ -504,29 +600,38 @@ export default function SignupPage() {
 
             {statusMessage ? <p className="text-sm text-red-600">{statusMessage}</p> : null}
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-4">
               {currentStep > 1 ? (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setCurrentStep((current) => (current === 3 ? 2 : 1))}
                   disabled={isSubmitting}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
-                  Back
+                  Atrás
                 </Button>
               ) : null}
 
-              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className={cn(
+                  "flex-1 py-3 font-semibold",
+                  "bg-orange-600 text-white hover:bg-orange-700 disabled:bg-orange-300"
+                )}
+              >
                 {isSubmitting
-                  ? "Saving..."
+                  ? "Guardando..."
                   : currentStep === 3
-                    ? "Finish Sign Up"
-                    : "Save and Continue"}
+                    ? "Finalizar registro"
+                    : "Continuar"}
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
-    </main>
+      </main>
+    </div>
   );
 }

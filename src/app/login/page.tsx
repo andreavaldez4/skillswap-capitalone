@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 type LoginResponse = {
@@ -33,59 +33,83 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = (await response.json()) as LoginResponse;
+      await response.json() as LoginResponse;
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Invalid credentials.");
+        throw new Error("Email o contraseña incorrectos.");
       }
 
       router.push("/success");
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : "Unable to log in.");
+      setStatusMessage(error instanceof Error ? error.message : "No se pudo iniciar sesión.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Log In</CardTitle>
-          <CardDescription>Use your email and password.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleLogin}>
-            <Input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="your.email@example.com"
-              autoComplete="email"
-              required
-            />
-            <Input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="password"
-              autoComplete="current-password"
-              required
-            />
-            {statusMessage ? <p className="text-sm text-red-600">{statusMessage}</p> : null}
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Logging in..." : "Log In"}
-            </Button>
-          </form>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-orange-100">
+        <div className="mx-auto max-w-7xl px-6 py-4">
+          <div className="text-2xl font-bold text-orange-600">SkillSwap</div>
+        </div>
+      </header>
 
-          <div className="mt-4 text-center text-sm text-slate-600">
-            No account?{" "}
-            <Link href="/signup" className="font-medium text-slate-900 underline">
-              Sign Up
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </main>
+      {/* Main Content */}
+      <main className="flex items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md border-0 shadow-lg">
+          <CardContent className="pt-8">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">Inicia sesión</h1>
+              <p className="mt-1 text-sm text-gray-600">Usa tu email y contraseña para continuar.</p>
+            </div>
+
+            <form className="space-y-4" onSubmit={handleLogin}>
+              <div>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="tu.email@ejemplo.com"
+                  autoComplete="email"
+                  required
+                  className="border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400"
+                />
+              </div>
+
+              <div>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="contraseña"
+                  autoComplete="current-password"
+                  required
+                  className="border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400"
+                />
+              </div>
+
+              {statusMessage ? <p className="text-sm text-red-600">{statusMessage}</p> : null}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-orange-600 py-3 font-semibold hover:bg-orange-700"
+              >
+                {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center text-sm text-gray-600">
+              ¿No tienes cuenta?{" "}
+              <Link href="/signup" className="font-semibold text-orange-600 hover:text-orange-700">
+                Crear una
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
   );
 }

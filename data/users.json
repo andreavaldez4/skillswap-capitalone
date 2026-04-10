@@ -1,5 +1,61 @@
 [
   {
+    "id": "aacee5e2-07bd-4e50-afda-d63c175e4e07",
+    "name": "dasdcsdcs",
+    "realName": "",
+    "aboutMe": "",
+    "interests": [
+      "cocina"
+    ],
+    "interestsOther": "",
+    "preferences": {
+      "wantsToLearn": [],
+      "wantsToLearnOther": "",
+      "canTeach": [],
+      "canTeachOther": "",
+      "learningStyle": [],
+      "learningStyleOther": "",
+      "teachingStyle": [],
+      "teachingStyleOther": "",
+      "availableHours": []
+    },
+    "email": "marinoe2005@gmail.com",
+    "password": "asdad",
+    "authProvider": "email",
+    "questionnaireCompleted": false,
+    "createdAt": "2026-04-10T21:25:49.451Z",
+    "updatedAt": "2026-04-10T21:25:52.896Z"
+  },
+  {
+    "id": "38e152f7-8be4-43d1-88bc-5794923edfde",
+    "name": "rsgsfgs",
+    "realName": "",
+    "aboutMe": "",
+    "interests": [],
+    "interestsOther": "dkjsnjks",
+    "preferences": {
+      "wantsToLearn": [
+        "design"
+      ],
+      "wantsToLearnOther": "",
+      "canTeach": [],
+      "canTeachOther": "",
+      "learningStyle": [
+        "visual"
+      ],
+      "learningStyleOther": "",
+      "teachingStyle": [],
+      "teachingStyleOther": "",
+      "availableHours": []
+    },
+    "email": "a@gmail.com",
+    "password": "123",
+    "authProvider": "email",
+    "questionnaireCompleted": false,
+    "createdAt": "2026-04-10T21:16:23.857Z",
+    "updatedAt": "2026-04-10T21:18:34.064Z"
+  },
+  {
     "id": "177abff3-99aa-4b36-8f83-347e93068d5a",
     "name": "testing",
     "realName": "",
