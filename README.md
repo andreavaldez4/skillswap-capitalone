@@ -47,6 +47,7 @@ Durante el desarrollo se completaron estas piezas principales del MVP:
 - Persistencia local en JSON para el MVP
 
 ## Como ejecutar el proyecto
+Estar en branch dev para ejecutar última actualización del proyecto
 
 ```bash
 npm install
