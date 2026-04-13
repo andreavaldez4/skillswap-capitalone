@@ -58,11 +58,11 @@ export default function MensajesPage() {
         return {
           id: `match-${user.id}`,
           participants: [CURRENT_USER, user],
-          messages: [],
+          messages: [] as Message[],
           isGroup: false,
         };
       })
-      .filter((conversation): conversation is Conversation => Boolean(conversation));
+      .filter((conversation): conversation is Conversation => conversation !== null);
 
     return [...baseDirect, ...dynamicConversations];
   }, [acceptedRequests]);
