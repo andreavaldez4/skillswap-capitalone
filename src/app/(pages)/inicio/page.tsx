@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,9 +9,12 @@ import { UserCard } from '@/components/shared/UserCard';
 import { SwappyHelper } from '@/components/shared/SwappyHelper';
 import { MOCK_USERS } from '@/lib/mockData';
 import { useUser } from '@/contexts/UserContext';
+import { getRandomSwappyMessage, getSwappyMessage } from '@/lib/swappyMessages';
 import { Users, MessageCircle, Globe, TrendingUp, Bell } from 'lucide-react';
 
 export default function InicioPage() {
+  // Usar mensaje fijo inicialmente para evitar hydration mismatch
+  const [swappyMessage, setSwappyMessage] = useState(getSwappyMessage('inicio', 0));
   const router = useRouter();
   const {
     pendingIncomingRequests,
@@ -221,12 +225,23 @@ export default function InicioPage() {
           </div>
         </Card>
 
-        {/* Tip de Swappy */}
-        <Card className="p-6 bg-gradient-to-r from-orange-50 to-white">
+        {/* Mensaje de Swappy - Destacado */}
+        <Card className="p-8 bg-gradient-to-r from-orange-50 via-white to-orange-50 border-2 border-orange-200 shadow-lg">
           <SwappyHelper
-            image="idle"
-            message="Los usuarios que enseñan ganan el doble de Skill XP."
+            image={swappyMessage.image}
+            message={swappyMessage.message}
+            size="large"
+            variant="highlight"
+            showName={true}
           />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSwappyMessage(getRandomSwappyMessage('inicio'))}
+            className="mt-4 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+          >
+            Ver otro mensaje
+          </Button>
         </Card>
       </div>
     </div>

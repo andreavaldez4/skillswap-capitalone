@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { SwappyHelper } from '@/components/shared/SwappyHelper';
 import { MOCK_CONVERSATIONS, CURRENT_USER, Conversation, Message, MOCK_USERS } from '@/lib/mockData';
 import { useUser } from '@/contexts/UserContext';
+import { getSwappyMessage } from '@/lib/swappyMessages';
 import { Send, ArrowLeft, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -277,8 +278,11 @@ export default function MensajesPage() {
               ) : (
                 <div className="p-8">
                   <SwappyHelper
-                    image="idle"
-                    message="Aún no tienes mensajes. Conecta con alguien para empezar."
+                    image={getSwappyMessage('mensajes', 0).image}
+                    message={getSwappyMessage('mensajes', 0).message}
+                    size="medium"
+                    variant="highlight"
+                    showName={true}
                   />
                 </div>
               )}
@@ -432,8 +436,11 @@ export default function MensajesPage() {
             ) : (
               <div className="p-8">
                 <SwappyHelper
-                  image="idle"
-                  message="Aún no tienes mensajes. Conecta con alguien para empezar."
+                  image={getSwappyMessage('mensajes', 0).image}
+                  message={getSwappyMessage('mensajes', 0).message}
+                  size="medium"
+                  variant="highlight"
+                  showName={true}
                 />
               </div>
             )}
@@ -509,9 +516,12 @@ export default function MensajesPage() {
           ) : (
             <div className="flex-1 flex items-center justify-center p-8">
               <SwappyHelper
-                image="idle"
+                image={getSwappyMessage('mensajes', 0).image}
                 message="Selecciona una conversación para ver los mensajes."
-                className="max-w-md"
+                size="large"
+                variant="highlight"
+                showName={true}
+                className="max-w-2xl"
               />
             </div>
           )}

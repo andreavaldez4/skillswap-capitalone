@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -15,6 +16,7 @@ import { UserCard } from '@/components/shared/UserCard';
 import { SwappyHelper } from '@/components/shared/SwappyHelper';
 import { MOCK_USERS } from '@/lib/mockData';
 import { useUser } from '@/contexts/UserContext';
+import { getSwappyMessage, getRandomSwappyMessage } from '@/lib/swappyMessages';
 import { cn } from '@/lib/utils';
 import { Search } from 'lucide-react';
 
@@ -46,6 +48,8 @@ export default function MatchesPage() {
   const [skillFilter, setSkillFilter] = useState('all');
   const [modalityFilter, setModalityFilter] = useState<ModalityFilter>('all');
   const [lastConnectedName, setLastConnectedName] = useState<string | null>(null);
+  // Usar mensaje fijo para evitar hydration mismatch
+  const swappyHelperMessage = getSwappyMessage('matches', 0);
 
   const filters: { value: Filter; label: string }[] = [
     { value: 'todos', label: 'Todos' },
@@ -126,6 +130,17 @@ export default function MatchesPage() {
             Encuentra personas con habilidades complementarias
           </p>
         </div>
+
+        {/* Mensaje de ayuda de Swappy */}
+        <Card className="p-6 bg-gradient-to-r from-orange-50 to-white border border-orange-200">
+          <SwappyHelper
+            image={swappyHelperMessage.image}
+            message={swappyHelperMessage.message}
+            size="medium"
+            variant="default"
+            showName={true}
+          />
+        </Card>
 
         {lastConnectedName && (
           <div className="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -263,13 +278,16 @@ export default function MatchesPage() {
             })}
           </div>
         ) : (
-          <div className="py-12">
+          <Card className="py-16 px-8 bg-white">
             <SwappyHelper
-              image="idle"
-              message="Aún no hay matches disponibles. Completa tu perfil para encontrar personas."
-              className="justify-center max-w-md mx-auto"
+              image={getSwappyMessage('noMatches', 0).image}
+              message={getSwappyMessage('noMatches', 0).message}
+              size="large"
+              variant="highlight"
+              showName={true}
+              className="justify-center max-w-2xl mx-auto"
             />
-          </div>
+          </Card>
         )}
       </div>
     </div>
